@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="demo.mapper.UserMapper">
+
+	<sql id="userCols">u.id,u.username,u.password</sql>
+
+	<select id="login" parameterType="string" resultType="demo.model.User">
+		select <include refid="userCols" />
+		from t_user u where u.username=#{param1} and u.password=#{param2}
+	</select>
+
+	<select id="exists" parameterType="string" resultType="long">
+		select
+		count(*) from t_user u where u.username=#{param1}
+	</select>
+
+	<select id="findByPage" resultType="demo.model.User">
+		select * from t_user u where
+		password=#{param3.password} limit #{param1},#{param2}
+	</select>
+
+	<!-- <select id="count" parameterType="demo.model.User" resultType="long"> 
+		select count(*) from t_user u where u.password=#{password} </select> -->
+
+	<!-- 动态SQL语句 -->
+	<select id="count" parameterType="demo.model.User" resultType="long">
+		select count(*) from t_user u
+		<where>
+			<if test="username!=null">
+				username=#{username}
+			</if>
+			<if test="password!=null">
+				and password=#{password}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- <insert id=""></insert> <delete id=""></delete> -->
+
+	<!-- <update id="update" parameterType="demo.model.User"> update t_user 
+		<set> <if test="username!=null"> username=#{username}, </if> <if test="password!=null"> 
+		password=#{password} </if> </set> where id=#{id} </update> -->
+
+	<update id="update" parameterType="demo.model.User">
+		update t_user
+		<set>
+			<choose>
+				<when test="username=='李四'.toString()">
+					username="柳九"
+				</when>
+				<when test="username=='王五'.toString()">
+					username="杨十"
+				</when>
+				<otherwise>
+					username=#{username}
+				</otherwise>
+			</choose>
+		</set>
+		where id=#{id}
+	</update>
+
+	<delete id="deleteBatch" parameterType="list">
+		delete from t_user where id in
+		<foreach collection="list" item="id" open="(" close=")"
+			separator=",">
+			#{id}
+		</foreach>
+	</delete>
+
+	<insert id="addBatch" parameterType="list">
+		insert into t_user values
+		<foreach collection="list" item="obj" separator=",">
+			(null,#{obj.username},#{obj.password})
+		</foreach>
+	</insert>
+	
+	<insert id="save" parameterType="demo.model.User">
+	    insert into t_user values(null,#{username},#{password});
+	</insert>
+
+</mapper>

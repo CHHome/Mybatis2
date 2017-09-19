@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="demo.mapper.OrderItemMapper">
+
+	<resultMap type="OrderItem" id="orderItemRM">
+		<id property="id" column="id" />
+		<result property="oId" column="orderId" />
+		<result property="item" column="item" />
+		<result property="price" column="price" />
+		<result property="quantity" column="column" />
+		<association property="order" column="orderId" javaType="Order" select="selectOrder" />
+	</resultMap>
+	<resultMap type="Order" id="orderRM">
+		<id property="id" column="id"/>
+		<result property="orderNo" column="orderNo" />
+		<result property="total" column="total" />
+	</resultMap>
+	
+	<insert id="addBatch" parameterType="list">
+		insert into t_order_item values
+		<foreach collection="list" item="obj" separator=",">
+			(null,#{obj.oId},#{obj.item},#{obj.price},#{obj.quantity})
+		</foreach>
+	</insert>
+	
+	<select id="selectOne" parameterType="int" resultMap="orderItemRM">
+		select * from t_order_item where id=#{id}
+	</select>	
+	
+	<select id="selectOrder" parameterType="int" resultMap="orderRM">
+		select * from t_order where id=#{id}
+	</select>
+	
+</mapper>

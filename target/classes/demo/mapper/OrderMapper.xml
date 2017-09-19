@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="demo.mapper.OrderMapper">
+	<resultMap type="Order" id="orderRM">
+		<id property="id" column="id" />
+		<result property="orderNo" column="orderNo" />
+		<result property="total" column="total" />
+		<!-- property属性设置查询的属性, column设置关联查询的字段, select设置关联查询的引用得语句 -->
+		<association property="oiList" column="id" select="selectOrderItem" />
+	</resultMap>
+	<resultMap type="OrderItem" id="orderItemRM">
+		<id property="id" column="id" />
+		<result property="oId" column="orderId" />
+		<result property="item" column="item" />
+		<result property="price" column="price" />
+		<result property="quantity" column="column" />
+	</resultMap>
+
+	<select id="selectAll" parameterType="int" resultMap="orderRM">
+		select * from t_order
+	</select>
+
+	<select id="selectOrderItem" parameterType="int" resultMap="orderItemRM">
+		select * from t_order_item where orderId=#{id}
+	</select>
+
+	<insert id="save" parameterType="Order" keyProperty="id"
+		useGeneratedKeys="true">
+		insert into t_order values(null,#{orderNo},#{total})
+	</insert>
+
+</mapper>
